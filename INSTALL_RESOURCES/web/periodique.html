@@ -1,0 +1,234 @@
+<div class="container"
+     ng-init="variables = {}">
+
+    <ods-dataset-context context="all"
+                     all-dataset="domaindatasets"
+                     all-urlsync="true"
+
+                     ng-init="variables = {
+                'selected': {
+                        'periodicity': all.parameters['refine.periodicity'] || 'Toutes',
+                        'statut_de_publication': all.parameters['refine.statut_de_publication'] || 'Tous'},
+                'focusedDropdown': ''
+                }">
+    {{
+    all.parameters['disjunctive.periodicity'] = true;
+    all.parameters['disjunctive.statut_de_publication'] = true;
+    all.parameters['q.filter'] = 'NOT #null(prochaine_echeance)';
+    all.parameters['sort'] = 'modifieddayssincenow';
+    ''
+    }}
+
+
+    <div class="header">
+        <a href="/pages/action" class="back-button" ods-tooltip="Retour à la supervision">
+        </a>
+        <div class="title">
+            Prochaines mises à jour des jeux de données
+        </div>
+    </div>
+
+    <div class="app-box">
+        <div class="dropdown-backdrop" ng-click="variables.focusedDropdown = ''"
+             ng-if="variables.focusedDropdown"></div>
+
+        <div class="search-module">
+    <i class="fa fa-search" aria-hidden="true"></i>
+    <input type="text"
+           placeholder="Rechercher un jeu de données"
+           ng-model="all.parameters['q']"
+           ng-model-options="{ updateOn: 'keyup', debounce: { 'default': 300, 'blur': 0 }}"/>
+    <div class="clear-button"
+         ng-if="all.parameters['q']"
+         ng-click="all.parameters['q'] = undefined">
+        <i class="fa fa-ban" aria-hidden="true"></i>
+    </div>
+</div>
+
+        <div class="app-row">
+            <!--
+                Pill filter : Périodicité
+            -->
+            <div class="filter dropdown-group" ods-facet-results="facetsperiodicity" ods-facet-results-context="all"
+                 ods-facet-results-facet-name="periodicity" ods-facet-results-sort="alphanum">
+                <button ng-click="variables.focusedDropdown = (variables.focusedDropdown == 'periodicity' ? '' : 'periodicity');"
+                        class="pill"
+                        ng-class="{'pill-selected': variables.selected.periodicity != 'Toutes',
+                                  'pill-open': variables.focusedDropdown == 'periodicity'}">
+                    {{ (variables.selected.periodicity=='Toutes'?'Périodicité':variables.selected.periodicity) |
+                    capitalize }}
+                </button>
+                <div class="filter-box dropdown-menu alignleft"
+                     ng-class="{'dropdown-visible' : variables.focusedDropdown == 'periodicity' }">
+                    <div class="filter-box-title">
+                        Périodicité
+                    </div>
+                    <div class="filter-box-choices">
+                        <div class="filter-box-choice ods-check-input ods-radio-input">
+                            <input class="ods-check-input__input" type="radio" name="periodicity" ng-model="variables.selected.periodicity"
+                                   value="Toutes" id="all"/>
+                            <label class="ods-check-input__label" for="all">Toutes</label>
+                        </div>
+                        <div class="filter-box-choice ods-check-input ods-radio-input" ng-repeat="facet in facetsperiodicity">
+                            <input class="ods-check-input__input" type="radio" name="periodicity" ng-model="variables.selected.periodicity"
+                                   ng-value="facet.path" id="{{ facet.path }}"/>
+                            <label class="ods-check-input__label" for="{{ facet.path }}">{{ facet.name | capitalize }}</label>
+                        </div>
+                        {{ all.parameters['refine.periodicity'] =
+                        (variables.selected.periodicity=='Toutes'?undefined:variables.selected.periodicity); '' }}
+                    </div>
+                </div>
+            </div>
+
+            <!--
+                Pill filter : Statut
+            -->
+            <div class="filter dropdown-group" ods-facet-results="facetsstatut" ods-facet-results-context="all"
+                 ods-facet-results-facet-name="statut_de_publication" ods-facet-results-sort="alphanum">
+
+                {{ statuts = (facetsstatut | toObject : 'path'); '' }}
+                <button ng-click="variables.focusedDropdown = (variables.focusedDropdown == 'statut' ? '' : 'statut');"
+                        class="pill"
+                        ng-class="{'pill-selected': variables.selected.statut_de_publication != 'Tous',
+                                   'pill-open': variables.focusedDropdown == 'statut'}">
+                    {{ (variables.selected.statut_de_publication=='Tous'?'Statut de mise à
+                    jour':variables.selected.statut_de_publication) | capitalize }}
+                </button>
+                <div class="filter-box dropdown-menu alignleft"
+                     ng-class="{'dropdown-visible' : variables.focusedDropdown == 'statut' }">
+                    <div class="filter-box-title">
+                        Statut de mise à jour
+                    </div>
+                    <div class="filter-box-choices">
+                        <div class="filter-box-choice ods-check-input ods-radio-input">
+                            <input class="ods-check-input__input" type="radio" name="statut" ng-model="variables.selected.statut_de_publication"
+                                   value="Tous" id="tous"/>
+                            <label class="ods-check-input__label" for="tous">Tous</label>
+                        </div>
+                        <div class="filter-box-choice ods-check-input ods-radio-input" ng-if="statuts['En retard']">
+                            <input class="ods-check-input__input" type="radio" name="statut" ng-model="variables.selected.statut_de_publication"
+                                   value="En retard" id="enretard"/>
+                            <label class="ods-check-input__label periodicity-flag retard" for="enretard">
+                                <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                                Mises à jour en retard</label>
+                        </div>
+                        <div class="filter-box-choice ods-check-input ods-radio-input" ng-if="statuts['À venir']">
+                            <input class="ods-check-input__input" type="radio" name="statut" ng-model="variables.selected.statut_de_publication"
+                                   value="À venir" id="avenir"/>
+                            <label class="ods-check-input__label periodicity-flag avenir left-side" for="avenir">
+                                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                Mises à jour imminentes</label>
+                        </div>
+
+                        {{ all.parameters['refine.statut_de_publication'] =
+                        (variables.selected.statut_de_publication=='Tous'?undefined:variables.selected.statut_de_publication);
+                        '' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table ods-get-window-layout="tablelo"
+       ods-results="datasets"
+       ods-results-context="all"
+       ods-results-max="100">
+    <thead>
+    <tr class="gridlayout">
+        <th class="borderless col-nb-1" scope="col">Jeu de données</th>
+        <th class="borderless col-nb-2" scope="col" ng-if="tablelo.width > 850">Contact</th>
+        <th class="borderless col-nb-3" scope="col" ng-if="tablelo.width > 800">Périodicité</th>
+        <th class="borderless col-nb-4" scope="col"></th>
+        <th class="borderless col-nb-5" scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="gridlayout"
+        ng-repeat-start="dataset in datasets">
+        <td class="col-nb-1 inlined-content"
+            ng-click="variables.details = (variables.details == dataset.fields.dataset_id?'':dataset.fields.dataset_id)"
+            ng-class="{'details-active': variables.details == dataset.fields.dataset_id}">
+            <ods-theme-picto theme="{{ dataset.fields.theme }}"></ods-theme-picto>
+            <div class="truncate">
+                {{dataset.fields.title}}
+            </div>
+            <div class="details-text">
+                - Détails
+            </div>
+        </td>
+        <td class="col-nb-2" ng-if="tablelo.width > 850">
+            <span>{{ dataset.fields.custom_pointofcontactname }}</span>
+        </td>
+        <td class="col-nb-3" ng-if="tablelo.width > 800">
+            {{ dataset.fields.periodicity | capitalize }}
+        </td>
+        <td class="col-nb-4 periodicity-flag-container">
+            <div class="periodicity-flag right-side retard"
+  ng-if=" dataset.fields.statut_de_publication == 'En retard'">
+  retard de {{ dataset.fields.modifieddayssincenow }} jours
+</div>
+
+<div class="periodicity-flag right-side avenir"
+  ng-if=" dataset.fields.statut_de_publication == 'À venir'">
+  dans {{ dataset.fields.modifieddayssincenow|math:'abs' }} jours
+</div>
+
+<div class="periodicity-flag right-side prochaine"
+  ng-if="!dataset.fields.statut_de_publication">
+  Le {{ dataset.fields.prochaine_echeance|date:'d MMM' }}
+</div>
+
+        </td>
+        <td class="col-nb-5">
+            <div class="dropdown-group">
+                <button class="fa fa-ellipsis-v dropdown-button"
+                        ng-click="variables.focusedDropdown = (variables.focusedDropdown == dataset.fields.dataset_id ? '' : dataset.fields.dataset_id)"
+                        ng-class="{'active': variables.focusedDropdown == dataset.fields.dataset_id}"></button>
+                <div class="dropdown-menu alignright smallpad"
+                     ng-class="{'dropdown-visible' : variables.focusedDropdown == dataset.fields.dataset_id }">
+                    <a target="_blank" href="{{ '/explore/dataset/' + dataset.fields.dataset_id + '/?' }}">Explorer</a>
+                    <a target="_blank"
+                       href="{{ '/backoffice/catalog/datasets/' + dataset.fields.dataset_id + '/#processing' }}">Modifier</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    <tr class="details"
+        ng-repeat-end
+        ng-show="variables.details == dataset.fields.dataset_id">
+        <td class="details-col-nb-1" colspan="0">
+            <ul class="metas">
+                <li class="meta">
+                    <span class="metaname">Identifiant :</span><span
+                            class="metavalue">{{ dataset.fields.dataset_id }}</span>
+                </li>
+                <li class="meta">
+                    <span class="metaname">Thème :</span><span class="metavalue">{{ dataset.fields.theme }}</span>
+                </li>
+                <li class="meta">
+                    <span class="metaname">Licence :</span><span class="metavalue">{{ dataset.fields.license }}</span>
+                </li>
+                <li class="meta">
+                    <span class="metaname">Date de dernière modification :</span><span class="metavalue">{{ dataset.fields.modified | date }}</span>
+                </li>
+
+                <li class="meta" ng-if="tablelo.width <= 850">
+                    <span class="metaname">Contact :</span><span class="metavalue">{{ dataset.fields.custom_pointofcontactname }}</span>
+                </li>
+                <li class="meta" ng-if="tablelo.width <= 800">
+                    <span class="metaname">Périodicité :</span><span
+                            class="metavalue">{{ dataset.fields.periodicity }}</span>
+                </li>
+                <li class="meta contact">
+                    <span class="metaname">Email :</span><span class="metavalue">{{ dataset.fields.custom_pointofcontactemail }} ({{ dataset.fields.custom_pointofcontactname }})</span>
+                    <ods-clipboard-input value="dataset.fields.custom_pointofcontactemail"></ods-clipboard-input>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+    </div>
+    </ods-dataset-context>
+</div>
