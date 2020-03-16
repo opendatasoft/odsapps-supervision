@@ -13,9 +13,9 @@
 - To apply a processing pipeline from a configuration file, please see [cmds here](processing_pipeline_copy-paste-cmds.md)
 - then publish the dataset
 
-#### Add 4 custom metadata
+#### Add 4 metadata, 2 custom and 2 admin
 
- - Ask ODS to add these 4 custom metadata to your portal 
+ - Ask ODS to add these 2 *custom metadata* to your portal (in the default template, ie. it will avoid to prefix the field id)
    - "Cycle de publication"
      - ID : `cycle`
      - Type : enum
@@ -38,11 +38,13 @@
        - `Mensuel`
        - `Trimestriel`
        - `Annuel`
+       
+ - Ask ODS to add these 2 *admin metadata* to your portal (in the `admin` template)
    - "Point de contact - nom"
-     - ID : `pointofcontactname`
+     - ID : `point_de_contact_nom` (that will be `admin_point_de_contact_name` within the `admin` template)
      - Type : Input field / Text
    - "Point de contact - email"
-     - ID : `pointofcontactemail`
+     - ID : `point_de_contact_email` (that will be `admin_point_de_contact_email` within the `admin` template)
      - Type : Input field / Text
 
 #### Create 3 pages

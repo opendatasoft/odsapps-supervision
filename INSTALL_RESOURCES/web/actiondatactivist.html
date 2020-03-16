@@ -1,308 +1,308 @@
 <div class="container">
 
     <ods-dataset-context context="all,nonsuivi,enretard,avenir,prochaine"
-                     all-dataset="domaindatasets"
-                     enretard-dataset="domaindatasets"
-                     enretard-parameters="{'refine.statut_de_publication':'En retard'}"
-                     avenir-dataset="domaindatasets"
-                     avenir-parameters="{'refine.statut_de_publication':'À venir'}"
-                     prochaine-dataset="domaindatasets"
-                     prochaine-parameters="{'q':'#null(statut_de_publication)'}"
-                     nonsuivi-dataset="domaindatasets"
-                     nonsuivi-parameters="{'q':'#null(cycle)'}">
+                         all-dataset="domaindatasets"
+                         enretard-dataset="domaindatasets"
+                         enretard-parameters="{'refine.statut_de_publication':'En retard'}"
+                         avenir-dataset="domaindatasets"
+                         avenir-parameters="{'refine.statut_de_publication':'À venir'}"
+                         prochaine-dataset="domaindatasets"
+                         prochaine-parameters="{'q':'#null(statut_de_publication)'}"
+                         nonsuivi-dataset="domaindatasets"
+                         nonsuivi-parameters="{'q':'#null(cycle)'}">
 
-    <!-- Part 0 : All -->
-    <span ods-aggregation="countall"
-          ods-aggregation-context="all"
-          ods-aggregation-function="count">
+        <!-- Part 0 : All -->
+        <span ods-aggregation="countall"
+              ods-aggregation-context="all"
+              ods-aggregation-function="count">
         {{ variables['all']['count'] = countall ; '' }}
     </span>
 
-    <!-- Part 1 : Cycles -->
-    <span ods-analysis="analysecycles"
-          ods-analysis-context="all"
-          ods-analysis-x="cycle"
-          ods-analysis-serie-count="COUNT()">
+        <!-- Part 1 : Cycles -->
+        <span ods-analysis="analysecycles"
+              ods-analysis-context="all"
+              ods-analysis-x="cycle"
+              ods-analysis-serie-count="COUNT()">
         {{ variables['cycles'] = (analysecycles.results | toObject : 'x') ; '' }}
     </span>
 
-    <span ods-aggregation="countnonsuivi"
-          ods-aggregation-context="nonsuivi"
-          ods-aggregation-function="count">
+        <span ods-aggregation="countnonsuivi"
+              ods-aggregation-context="nonsuivi"
+              ods-aggregation-function="count">
         {{ variables['Non suivi'] = countnonsuivi ; '' }}
     </span>
 
-    <!-- Part 2 : Périodicité -->
-    <span ods-analysis="analyseenretard"
-          ods-analysis-context="enretard"
-          ods-analysis-x="periodicity"
-          ods-analysis-serie-count="COUNT()">
+        <!-- Part 2 : Périodicité -->
+        <span ods-analysis="analyseenretard"
+              ods-analysis-context="enretard"
+              ods-analysis-x="periodicity"
+              ods-analysis-serie-count="COUNT()">
         {{ variables['periodicite']['enretard'] = (analyseenretard.results | toObject : 'x') ; '' }}
     </span>
 
-    <span ods-analysis="analyseavenir"
-          ods-analysis-context="avenir"
-          ods-analysis-x="periodicity"
-          ods-analysis-serie-days="MAX(modifieddayssincenow)">
+        <span ods-analysis="analyseavenir"
+              ods-analysis-context="avenir"
+              ods-analysis-x="periodicity"
+              ods-analysis-serie-days="MAX(modifieddayssincenow)">
         {{ variables['periodicite']['avenir'] = (analyseavenir.results | toObject : 'x') ; '' }}
     </span>
 
-    <span ods-analysis="analyseprochaine"
-          ods-analysis-context="prochaine"
-          ods-analysis-x="prochaine_echeance"
-          ods-analysis-x-periodicity="periodicity"
-          ods-analysis-serie-count="COUNT()">
+        <span ods-analysis="analyseprochaine"
+              ods-analysis-context="prochaine"
+              ods-analysis-x="prochaine_echeance"
+              ods-analysis-x-periodicity="periodicity"
+              ods-analysis-serie-count="COUNT()">
         <!-- Go over each results (ie. next publish date for each periodicity state), and keep the first date of each periodicity state
             Expected results is the first publish date that comes in the future for each periodicity
         -->
         <span ng-repeat="item in analyseprochaine.results">
             {{
-            prochaine_echeance = item.x.prochaine_echeance.year+'/'+(10 > item.x.prochaine_echeance.month?'0':'')+item.x.prochaine_echeance.month+'/'+(10 > item.x.prochaine_echeance.day?'0':'')+item.x.prochaine_echeance.day;
-            variables['periodicite']['prochaine'][item.x.periodicity] = (variables['periodicite']['prochaine'][item.x.periodicity]?variables['periodicite']['prochaine'][item.x.periodicity]:prochaine_echeance);
-            ''
-            }}
+                    prochaine_echeance = item.x.prochaine_echeance.year+'/'+(10 > item.x.prochaine_echeance.month?'0':'')+item.x.prochaine_echeance.month+'/'+(10 > item.x.prochaine_echeance.day?'0':'')+item.x.prochaine_echeance.day;
+                    variables['periodicite']['prochaine'][item.x.periodicity] = (variables['periodicite']['prochaine'][item.x.periodicity]?variables['periodicite']['prochaine'][item.x.periodicity]:prochaine_echeance);
+                    ''
+                    }}
         </span>
     </span>
 
-    <div class="title-bloc spacer-small">
-        <div class="title-bloc-header">{{ variables['all']['count'] | number }} jeux de données</div>
-        <a href="/pages/jeuxdedonnees">Voir tous les jeux de données <i class="fa fa-angle-right" aria-hidden="true"></i></a>
-    </div>
+        <div class="title-bloc spacer-small">
+            <div class="title-bloc-header">{{ variables['all']['count'] | number }} jeux de données</div>
+            <a href="/pages/jeuxdedonnees">Voir tous les jeux de données <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+        </div>
 
-    <!--%- include('_grid-supervision.ejs'); -%-->
-    <div class="grid datactivist">
-    <div class="grid-item hoverable datactivist-collecter">
-        <a href="/pages/jeuxdedonnees/?refine.cycle=Identifier" class="kpi-card">
-            <div class="kpi-description">
-                Identifier
+        <!--%- include('_grid-supervision.ejs'); -%-->
+        <div class="grid datactivist">
+            <div class="grid-item hoverable datactivist-collecter">
+                <a href="/pages/jeuxdedonnees/?refine.cycle=Identifier" class="kpi-card">
+                    <div class="kpi-description">
+                        Identifier
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Identifier'].count || 0 | number }}
+                    </div>
+                </a>
             </div>
-            <div class="kpi-title">
-                {{ variables['cycles']['Identifier'].count || 0 | number }}
+            <div class="grid-item hoverable datactivist-valider">
+                <a href="/pages/jeuxdedonnees/?refine.cycle=Valider" class="kpi-card">
+                    <div class="kpi-description">
+                        Valider
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Valider'].count || 0 | number }}
+                    </div>
+                </a>
             </div>
-        </a>
-    </div>
-    <div class="grid-item hoverable datactivist-valider">
-        <a href="/pages/jeuxdedonnees/?refine.cycle=Valider" class="kpi-card">
-            <div class="kpi-description">
-                Valider
+            <div class="grid-item hoverable datactivist-extraire">
+                <a href="/pages/jeuxdedonnees/?refine.cycle=Extraire" class="kpi-card">
+                    <div class="kpi-description">
+                        Extraire
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Extraire'].count || 0 | number }}
+                    </div>
+                </a>
             </div>
-            <div class="kpi-title">
-                {{ variables['cycles']['Valider'].count || 0 | number }}
+            <div class="grid-item hoverable datactivist-edition">
+                <a href="/pages/jeuxdedonnees/?refine.cycle=Éditer" class="kpi-card">
+                    <div class="kpi-description">
+                        Éditer
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Éditer'].count || 0 | number }}
+                    </div>
+                </a>
             </div>
-        </a>
-    </div>
-    <div class="grid-item hoverable datactivist-extraire">
-        <a href="/pages/jeuxdedonnees/?refine.cycle=Extraire" class="kpi-card">
-            <div class="kpi-description">
-                Extraire
+            <div class="grid-item hoverable datactivist-standardiser">
+                <a href="/pages/jeuxdedonnees/?refine.cycle=Standardiser" class="kpi-card">
+                    <div class="kpi-description">
+                        Standardiser
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Standardiser'].count || 0 | number }}
+                    </div>
+                </a>
             </div>
-            <div class="kpi-title">
-                {{ variables['cycles']['Extraire'].count || 0 | number }}
+            <div class="grid-item hoverable datactivist-publier">
+                <a href="/pages/jeuxdedonnees/?refine.cycle=Publier" class="kpi-card">
+                    <div class="kpi-description">
+                        Publier
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Publier'].count || 0 | number }}
+                    </div>
+                </a>
             </div>
-        </a>
-    </div>
-    <div class="grid-item hoverable datactivist-edition">
-        <a href="/pages/jeuxdedonnees/?refine.cycle=Éditer" class="kpi-card">
-            <div class="kpi-description">
-                Éditer
+            <div class="grid-item hoverable datactivist-maj">
+                <a href="/pages/jeuxdedonnees/?refine.cycle=Mettre à jour" class="kpi-card">
+                    <div class="kpi-description">
+                        Mettre à jour
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Mettre à jour'].count || 0 | number }}
+                    </div>
+                </a>
             </div>
-            <div class="kpi-title">
-                {{ variables['cycles']['Éditer'].count || 0 | number }}
+            <div class="grid-item hoverable datactivist-nonsuivi">
+                <a href="/pages/jeuxdedonnees/?refine.cycle=Non suivi" class="kpi-card">
+                    <div class="kpi-description">
+                        Non suivi
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['Non suivi'] || 0 | number }}
+                    </div>
+                </a>
             </div>
-        </a>
-    </div>
-    <div class="grid-item hoverable datactivist-standardiser">
-        <a href="/pages/jeuxdedonnees/?refine.cycle=Standardiser" class="kpi-card">
-            <div class="kpi-description">
-                Standardiser
-            </div>
-            <div class="kpi-title">
-                {{ variables['cycles']['Standardiser'].count || 0 | number }}
-            </div>
-        </a>
-    </div>
-    <div class="grid-item hoverable datactivist-publier">
-        <a href="/pages/jeuxdedonnees/?refine.cycle=Publier" class="kpi-card">
-            <div class="kpi-description">
-                Publier
-            </div>
-            <div class="kpi-title">
-                {{ variables['cycles']['Publier'].count || 0 | number }}
-            </div>
-        </a>
-    </div>
-    <div class="grid-item hoverable datactivist-maj">
-        <a href="/pages/jeuxdedonnees/?refine.cycle=Mettre à jour" class="kpi-card">
-            <div class="kpi-description">
-                Mettre à jour
-            </div>
-            <div class="kpi-title">
-                {{ variables['cycles']['Mettre à jour'].count || 0 | number }}
-            </div>
-        </a>
-    </div>
-    <div class="grid-item hoverable datactivist-nonsuivi">
-        <a href="/pages/jeuxdedonnees/?refine.cycle=Non suivi" class="kpi-card">
-            <div class="kpi-description">
-                Non suivi
-            </div>
-            <div class="kpi-title">
-                {{ variables['Non suivi'] || 0 | number }}
-            </div>
-        </a>
-    </div>
-</div>
-    <div class="title-bloc spacer-large">
-        <div class="title-bloc-header">Prochaines mises à jour des jeux de données</div>
-        <a href="/pages/periodique">Voir toutes les mises à jour <i class="fa fa-angle-right" aria-hidden="true"></i></a>
-    </div>
+        </div>
+        <div class="title-bloc spacer-large">
+            <div class="title-bloc-header">Prochaines mises à jour des jeux de données</div>
+            <a href="/pages/periodique">Voir toutes les mises à jour <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+        </div>
 
-    <div class="grid">
-        <div class="grid-item hebdomadaires" ng-if="true">
-            {{
-            title = 'hebdomadaires';
-            key = 'Hebdomadaire';
-            ''
-            }}
-            <div class="periodicity-card">
-    <div class="periodicity-title">
-        {{ title | capitalize }}
-    </div>
-    <div class="periodicity-content"
-         ng-if="variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key]">
-        <div class="periodicity-flags">
-            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=En retard' }}" class="periodicity-flag retard hoverable left-side"
-                 ng-if="variables['periodicite']['enretard'][key].count > 0">{{
-                variables['periodicite']['enretard'][key].count | number }} mise(s) à jour en retard
-            </a>
-            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=À%20venir' }}" class="periodicity-flag avenir hoverable left-side"
-                 ng-if="variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour dans {{
-                variables['periodicite']['avenir'][key]['days'] | math : 'abs' | number }} jour(s)
-            </a>
-            <div class="periodicity-flag prochaine"
-                 ng-if="variables['periodicite']['prochaine'][key] && !variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour le {{ variables['periodicite']['prochaine'][key] | moment | date
-                }}
+        <div class="grid">
+            <div class="grid-item hebdomadaires" ng-if="true">
+                {{
+                        title = 'hebdomadaires';
+                        key = 'Hebdomadaire';
+                        ''
+                        }}
+                <div class="periodicity-card">
+                    <div class="periodicity-title">
+                        {{ title | capitalize }}
+                    </div>
+                    <div class="periodicity-content"
+                         ng-if="variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key]">
+                        <div class="periodicity-flags">
+                            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=En retard' }}" class="periodicity-flag retard hoverable left-side"
+                               ng-if="variables['periodicite']['enretard'][key].count > 0">{{
+                                    variables['periodicite']['enretard'][key].count | number }} mise(s) à jour en retard
+                            </a>
+                            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=À%20venir' }}" class="periodicity-flag avenir hoverable left-side"
+                               ng-if="variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour dans {{
+                                    variables['periodicite']['avenir'][key]['days'] | math : 'abs' | number }} jour(s)
+                            </a>
+                            <div class="periodicity-flag prochaine"
+                                 ng-if="variables['periodicite']['prochaine'][key] && !variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour le {{ variables['periodicite']['prochaine'][key] | moment | date
+                                    }}
+                            </div>
+                        </div>
+                        <a href="{{ '/pages/periodique?refine.periodicity=' + key }}" class="periodicity-link-seeall">
+                            Voir toutes les prochaines mises à jour <span class="nowrap">{{ title }} <i class="fa fa-angle-right"
+                                                                                                        aria-hidden="true"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="!(variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key])">
+                        Pas de donnée pour cette périodicité
+                    </div>
+                </div>
+            </div>
+            <div class="grid-item mensuelles" ng-if="true">
+                {{
+                        title = 'mensuelles';
+                        key = 'Mensuelle';
+                        ''
+                        }}
+                <div class="periodicity-card">
+                    <div class="periodicity-title">
+                        {{ title | capitalize }}
+                    </div>
+                    <div class="periodicity-content"
+                         ng-if="variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key]">
+                        <div class="periodicity-flags">
+                            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=En retard' }}" class="periodicity-flag retard hoverable left-side"
+                               ng-if="variables['periodicite']['enretard'][key].count > 0">{{
+                                    variables['periodicite']['enretard'][key].count | number }} mise(s) à jour en retard
+                            </a>
+                            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=À%20venir' }}" class="periodicity-flag avenir hoverable left-side"
+                               ng-if="variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour dans {{
+                                    variables['periodicite']['avenir'][key]['days'] | math : 'abs' | number }} jour(s)
+                            </a>
+                            <div class="periodicity-flag prochaine"
+                                 ng-if="variables['periodicite']['prochaine'][key] && !variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour le {{ variables['periodicite']['prochaine'][key] | moment | date
+                                    }}
+                            </div>
+                        </div>
+                        <a href="{{ '/pages/periodique?refine.periodicity=' + key }}" class="periodicity-link-seeall">
+                            Voir toutes les prochaines mises à jour <span class="nowrap">{{ title }} <i class="fa fa-angle-right"
+                                                                                                        aria-hidden="true"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="!(variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key])">
+                        Pas de donnée pour cette périodicité
+                    </div>
+                </div>
+            </div>
+            <div class="grid-item trimestrielles" ng-if="true">
+                {{
+                        title = 'trimestrielles';
+                        key = 'Trimestrielle';
+                        ''
+                        }}
+                <div class="periodicity-card">
+                    <div class="periodicity-title">
+                        {{ title | capitalize }}
+                    </div>
+                    <div class="periodicity-content"
+                         ng-if="variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key]">
+                        <div class="periodicity-flags">
+                            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=En retard' }}" class="periodicity-flag retard hoverable left-side"
+                               ng-if="variables['periodicite']['enretard'][key].count > 0">{{
+                                    variables['periodicite']['enretard'][key].count | number }} mise(s) à jour en retard
+                            </a>
+                            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=À%20venir' }}" class="periodicity-flag avenir hoverable left-side"
+                               ng-if="variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour dans {{
+                                    variables['periodicite']['avenir'][key]['days'] | math : 'abs' | number }} jour(s)
+                            </a>
+                            <div class="periodicity-flag prochaine"
+                                 ng-if="variables['periodicite']['prochaine'][key] && !variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour le {{ variables['periodicite']['prochaine'][key] | moment | date
+                                    }}
+                            </div>
+                        </div>
+                        <a href="{{ '/pages/periodique?refine.periodicity=' + key }}" class="periodicity-link-seeall">
+                            Voir toutes les prochaines mises à jour <span class="nowrap">{{ title }} <i class="fa fa-angle-right"
+                                                                                                        aria-hidden="true"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="!(variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key])">
+                        Pas de donnée pour cette périodicité
+                    </div>
+                </div>
+            </div>
+            <div class="grid-item annuelles" ng-if="true">
+                {{
+                        title = 'annuelles';
+                        key = 'Annuelle';
+                        ''
+                        }}
+                <div class="periodicity-card">
+                    <div class="periodicity-title">
+                        {{ title | capitalize }}
+                    </div>
+                    <div class="periodicity-content"
+                         ng-if="variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key]">
+                        <div class="periodicity-flags">
+                            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=En retard' }}" class="periodicity-flag retard hoverable left-side"
+                               ng-if="variables['periodicite']['enretard'][key].count > 0">{{
+                                    variables['periodicite']['enretard'][key].count | number }} mise(s) à jour en retard
+                            </a>
+                            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=À%20venir' }}" class="periodicity-flag avenir hoverable left-side"
+                               ng-if="variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour dans {{
+                                    variables['periodicite']['avenir'][key]['days'] | math : 'abs' | number }} jour(s)
+                            </a>
+                            <div class="periodicity-flag prochaine"
+                                 ng-if="variables['periodicite']['prochaine'][key] && !variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour le {{ variables['periodicite']['prochaine'][key] | moment | date
+                                    }}
+                            </div>
+                        </div>
+                        <a href="{{ '/pages/periodique?refine.periodicity=' + key }}" class="periodicity-link-seeall">
+                            Voir toutes les prochaines mises à jour <span class="nowrap">{{ title }} <i class="fa fa-angle-right"
+                                                                                                        aria-hidden="true"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="!(variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key])">
+                        Pas de donnée pour cette périodicité
+                    </div>
+                </div>
             </div>
         </div>
-        <a href="{{ '/pages/periodique?refine.periodicity=' + key }}" class="periodicity-link-seeall">
-            Voir toutes les prochaines mises à jour <span class="nowrap">{{ title }} <i class="fa fa-angle-right"
-                                                                         aria-hidden="true"></i></span>
-        </a>
-    </div>
-    <div ng-if="!(variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key])">
-        Pas de donnée pour cette périodicité
-    </div>
-</div>
-        </div>
-        <div class="grid-item mensuelles" ng-if="true">
-            {{
-            title = 'mensuelles';
-            key = 'Mensuelle';
-            ''
-            }}
-            <div class="periodicity-card">
-    <div class="periodicity-title">
-        {{ title | capitalize }}
-    </div>
-    <div class="periodicity-content"
-         ng-if="variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key]">
-        <div class="periodicity-flags">
-            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=En retard' }}" class="periodicity-flag retard hoverable left-side"
-                 ng-if="variables['periodicite']['enretard'][key].count > 0">{{
-                variables['periodicite']['enretard'][key].count | number }} mise(s) à jour en retard
-            </a>
-            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=À%20venir' }}" class="periodicity-flag avenir hoverable left-side"
-                 ng-if="variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour dans {{
-                variables['periodicite']['avenir'][key]['days'] | math : 'abs' | number }} jour(s)
-            </a>
-            <div class="periodicity-flag prochaine"
-                 ng-if="variables['periodicite']['prochaine'][key] && !variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour le {{ variables['periodicite']['prochaine'][key] | moment | date
-                }}
-            </div>
-        </div>
-        <a href="{{ '/pages/periodique?refine.periodicity=' + key }}" class="periodicity-link-seeall">
-            Voir toutes les prochaines mises à jour <span class="nowrap">{{ title }} <i class="fa fa-angle-right"
-                                                                         aria-hidden="true"></i></span>
-        </a>
-    </div>
-    <div ng-if="!(variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key])">
-        Pas de donnée pour cette périodicité
-    </div>
-</div>
-        </div>
-        <div class="grid-item trimestrielles" ng-if="true">
-            {{
-            title = 'trimestrielles';
-            key = 'Trimestrielle';
-            ''
-            }}
-            <div class="periodicity-card">
-    <div class="periodicity-title">
-        {{ title | capitalize }}
-    </div>
-    <div class="periodicity-content"
-         ng-if="variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key]">
-        <div class="periodicity-flags">
-            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=En retard' }}" class="periodicity-flag retard hoverable left-side"
-                 ng-if="variables['periodicite']['enretard'][key].count > 0">{{
-                variables['periodicite']['enretard'][key].count | number }} mise(s) à jour en retard
-            </a>
-            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=À%20venir' }}" class="periodicity-flag avenir hoverable left-side"
-                 ng-if="variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour dans {{
-                variables['periodicite']['avenir'][key]['days'] | math : 'abs' | number }} jour(s)
-            </a>
-            <div class="periodicity-flag prochaine"
-                 ng-if="variables['periodicite']['prochaine'][key] && !variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour le {{ variables['periodicite']['prochaine'][key] | moment | date
-                }}
-            </div>
-        </div>
-        <a href="{{ '/pages/periodique?refine.periodicity=' + key }}" class="periodicity-link-seeall">
-            Voir toutes les prochaines mises à jour <span class="nowrap">{{ title }} <i class="fa fa-angle-right"
-                                                                         aria-hidden="true"></i></span>
-        </a>
-    </div>
-    <div ng-if="!(variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key])">
-        Pas de donnée pour cette périodicité
-    </div>
-</div>
-        </div>
-        <div class="grid-item annuelles" ng-if="true">
-            {{
-            title = 'annuelles';
-            key = 'Annuelle';
-            ''
-            }}
-            <div class="periodicity-card">
-    <div class="periodicity-title">
-        {{ title | capitalize }}
-    </div>
-    <div class="periodicity-content"
-         ng-if="variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key]">
-        <div class="periodicity-flags">
-            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=En retard' }}" class="periodicity-flag retard hoverable left-side"
-                 ng-if="variables['periodicite']['enretard'][key].count > 0">{{
-                variables['periodicite']['enretard'][key].count | number }} mise(s) à jour en retard
-            </a>
-            <a href="{{ '/pages/periodique?refine.periodicity=' + key + '&refine.statut_de_publication=À%20venir' }}" class="periodicity-flag avenir hoverable left-side"
-                 ng-if="variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour dans {{
-                variables['periodicite']['avenir'][key]['days'] | math : 'abs' | number }} jour(s)
-            </a>
-            <div class="periodicity-flag prochaine"
-                 ng-if="variables['periodicite']['prochaine'][key] && !variables['periodicite']['avenir'][key]['days']">Prochaine mise à jour le {{ variables['periodicite']['prochaine'][key] | moment | date
-                }}
-            </div>
-        </div>
-        <a href="{{ '/pages/periodique?refine.periodicity=' + key }}" class="periodicity-link-seeall">
-            Voir toutes les prochaines mises à jour <span class="nowrap">{{ title }} <i class="fa fa-angle-right"
-                                                                         aria-hidden="true"></i></span>
-        </a>
-    </div>
-    <div ng-if="!(variables['periodicite']['enretard'][key] || variables['periodicite']['avenir'][key] || variables['periodicite']['prochaine'][key])">
-        Pas de donnée pour cette périodicité
-    </div>
-</div>
-        </div>
-    </div>
 
     </ods-dataset-context>
 </div>

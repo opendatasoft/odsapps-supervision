@@ -196,7 +196,7 @@
             </div>
         </td>
         <td class="col-nb-3" ng-if="tablelo.width > 850">
-            <span>{{ dataset.fields.custom_pointofcontactname }}</span>
+            <span>{{ dataset.fields.admin_point_de_contact_nom }}</span>
         </td>
         <td class="col-nb-4" ng-if="tablelo.width > 800">
             {{ dataset.fields.modified | date : 'dd/MM/yyyy' }}
@@ -236,15 +236,15 @@
                     <span class="metaname">Date de dernière modification :</span><span class="metavalue">{{ dataset.fields.modified | date }}</span>
                 </li>
                 <li class="meta" ng-if="tablelo.width <= 800">
-                    <span class="metaname">Contact :</span><span class="metavalue">{{ dataset.fields.custom_pointofcontactname }}</span>
+                    <span class="metaname">Contact :</span><span class="metavalue">{{ dataset.fields.admin_point_de_contact_nom }}</span>
                 </li>
                 <li class="meta">
                     <span class="metaname">Périodicité :</span><span
                             class="metavalue">{{ dataset.fields.periodicity }}</span>
                 </li>
                 <li class="meta contact">
-                    <span class="metaname">Email :</span><span class="metavalue">{{ dataset.fields.custom_pointofcontactemail }} ({{ dataset.fields.custom_pointofcontactname }})</span>
-                    <ods-clipboard-input value="dataset.fields.custom_pointofcontactemail"></ods-clipboard-input>
+                    <span class="metaname">Email :</span><span class="metavalue">{{ dataset.fields.admin_point_de_contact_email }} ({{ dataset.fields.admin_point_de_contact_nom }})</span>
+                    <ods-clipboard-input value="dataset.fields.admin_point_de_contact_email"></ods-clipboard-input>
                 </li>
             </ul>
         </td>
