@@ -6,6 +6,10 @@
 
 - you must ask ODS to activate domaindataset extractor first
 - Dataset ID must be : `domaindatasets`
+- Source type is the `domain_datasets` extractor
+- Tick all settings, but mostly these two are mandatory : `admin_metadata` and `custom_metadata` 
+
+[(resource settings available here)](source.json)
 
 #### Set the app processing pipeline 
 
