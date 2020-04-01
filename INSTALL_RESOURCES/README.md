@@ -2,9 +2,9 @@
 
 ## Deployment guide
 
-#### Create a new dataset from `domaindataset://` source
+#### Create a new dataset from `domaindatasets://` source
 
-- you must ask ODS to activate domaindataset extractor first
+- See the [documentation here to create the dataset](https://help.opendatasoft.com/platform/fr/publishing_data/04_configuring_a_source/connectors/dataset_of_datasets.html)
 - Dataset ID must be : `domaindatasets`
 - Source type is the `domain_datasets` extractor
 - Tick all settings, but mostly these two are mandatory : `admin_metadata` and `custom_metadata` 
