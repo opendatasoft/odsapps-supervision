@@ -45,7 +45,7 @@
        
  - Ask ODS to add these 2 *admin metadata* to your portal (in the `admin` template)
    - "Point de contact - nom"
-     - ID : `point_de_contact_nom` (that will be `admin_point_de_contact_name` within the `admin` template)
+     - ID : `point_de_contact_nom` (that will be `admin_point_de_contact_nom` within the `admin` template)
      - Type : Input field / Text
    - "Point de contact - email"
      - ID : `point_de_contact_email` (that will be `admin_point_de_contact_email` within the `admin` template)
@@ -69,3 +69,13 @@ To install/get the Logigramme version of the App
 
 Supervision : `'order': [0, 'Tous','Collecter', 'Éditer', 'Mettre en forme', 'Mettre à jour', 'Finalisé','Non suivi']`
 Logigramme : `'order': [0, 'Tous','Identifier', 'Valider', 'Extraire', 'Éditer', 'Standardiser','Publier','Mettre à jour','Non suivi']`
+
+
+# Batch edit of metadata
+
+If you intend to deploy the app on an existing and old open data portal, you probably already have tons of data, multiple public and private datasets;
+Therefore filling all metadata values could be a bit long. 
+
+ODS CSMs can help you in this task. They developped a POSTMAN Collection, to update all your datasets metadata automatically by providing the right CSV file. Do not hesitate to get in touch.
+
+[To read more, follow the documentation here](https://github.com/opendatasoft/ods-cookbook/tree/master/management-api)
