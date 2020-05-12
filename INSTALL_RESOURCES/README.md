@@ -37,7 +37,7 @@
        - ø (Allow empty field)
        - `Irrégulière`
        - `Minute`
-       - `Quotidien`
+       - `Quotidienne`
        - `Hebdomadaire`
        - `Mensuelle`
        - `Trimestrielle`
