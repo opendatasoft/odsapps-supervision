@@ -35,7 +35,7 @@
      - Type : enum
      - Values :
        - ø (Allow empty field)
-       - `Irrégulier`
+       - `Irrégulière`
        - `Minute`
        - `Quotidien`
        - `Hebdomadaire`
