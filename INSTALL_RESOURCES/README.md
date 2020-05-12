@@ -39,9 +39,9 @@
        - `Minute`
        - `Quotidien`
        - `Hebdomadaire`
-       - `Mensuel`
-       - `Trimestriel`
-       - `Annuel`
+       - `Mensuelle`
+       - `Trimestrielle`
+       - `Annuelle`
        
  - Ask ODS to add these 2 *admin metadata* to your portal (in the `admin` template)
    - "Point de contact - nom"
