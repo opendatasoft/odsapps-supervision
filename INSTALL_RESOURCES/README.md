@@ -26,7 +26,7 @@
      - Values :
        - ø (Allow empty field)
        - `Collecter`
-       - `Editer`
+       - `Éditer`
        - `Mettre en forme`
        - `Mettre à jour`
        - `Finalisé`
