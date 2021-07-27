@@ -1,0 +1,372 @@
+<div class="container">
+
+    <ods-dataset-context context="all,unsupervised,late,forthcoming,coming"
+                         all-dataset="domaindatasets"
+                         late-dataset="domaindatasets"
+                         late-parameters="{'refine.publication_status':'Late'}"
+                         forthcoming-dataset="domaindatasets"
+                         forthcoming-parameters="{'refine.publication_status':'Forthcoming'}"
+                         coming-dataset="domaindatasets"
+                         coming-parameters="{'q':'#null(publication_status)'}"
+                         unsupervised-dataset="domaindatasets"
+                         unsupervised-parameters="{'q':'#null(cycle)'}">
+
+        <!-- Part 0 : All -->
+        <span ods-aggregation="countall"
+              ods-aggregation-context="all"
+              ods-aggregation-function="count">
+        {{ variables['all']['count'] = countall ; '' }}
+    </span>
+
+        <!-- Part 1 : Cycles -->
+        <span ods-analysis="analysecycles"
+              ods-analysis-context="all"
+              ods-analysis-x="cycle"
+              ods-analysis-serie-count="COUNT()">
+        {{ variables['cycles'] = (analysecycles.results | toObject : 'x') ; '' }}
+    </span>
+
+        <span ods-aggregation="countunsupervised"
+              ods-aggregation-context="unsupervised"
+              ods-aggregation-function="count">
+        {{ variables['Unsupervised'] = countunsupervised ; '' }}
+    </span>
+
+        <!-- Part 2 : Periodicity -->
+        <span ods-analysis="analyselate"
+              ods-analysis-context="late"
+              ods-analysis-x="periodicity"
+              ods-analysis-serie-count="COUNT()">
+        {{ variables['periodicite']['late'] = (analyselate.results | toObject : 'x') ; '' }}
+    </span>
+
+        <span ods-analysis="analyseforthcoming"
+              ods-analysis-context="forthcoming"
+              ods-analysis-x="periodicity"
+              ods-analysis-serie-days="MAX(modifieddayssincenow)">
+        {{ variables['periodicite']['forthcoming'] = (analyseforthcoming.results | toObject : 'x') ; '' }}
+    </span>
+
+        <span ods-analysis="analysecoming"
+              ods-analysis-context="coming"
+              ods-analysis-x="deadline"
+              ods-analysis-x-periodicity="periodicity"
+              ods-analysis-serie-count="COUNT()">
+        <!-- Go over each results (ie. next publish date for each periodicity state), and keep the first date of each periodicity state
+            Expected results is the first publish date that comes in the future for each periodicity
+        -->
+        <span ng-repeat="item in analysecoming.results">
+            {{
+            deadline = item.x.deadline.year+'/'+(10 > item.x.deadline.month?'0':'')+item.x.deadline.month+'/'+(10 > item.x.deadline.day?'0':'')+item.x.deadline.day;
+            variables['periodicite']['coming'][item.x.periodicity] = (variables['periodicite']['coming'][item.x.periodicity]?variables['periodicite']['coming'][item.x.periodicity]:deadline);
+            ''
+            }}
+        </span>
+    </span>
+
+        <div class="title-bloc spacer-small">
+            <div class="title-bloc-header">{{ variables['all']['count'] | number }} datasets</div>
+            <a href="/pages/datasets">See all datasets <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item hoverable extraction">
+                <a href="/pages/datasets/?refine.cycle=Collect" class="kpi-card">
+                    <div class="kpi-description">
+                        Collect
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Collect'].count || 0 | number }}
+                    </div>
+                </a>
+            </div>
+            <div class="grid-item hoverable edition">
+                <a href="/pages/datasets/?refine.cycle=Edit" class="kpi-card">
+                    <div class="kpi-description">
+                        Edit
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Edit'].count || 0 | number }}
+                    </div>
+                </a>
+            </div>
+            <div class="grid-item hoverable miseenforme">
+                <a href="/pages/datasets/?refine.cycle=Format" class="kpi-card">
+                    <div class="kpi-description">
+                        Format
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Format'].count || 0 | number }}
+                    </div>
+                </a>
+            </div>
+            <div class="grid-item hoverable maj">
+                <a href="/pages/datasets/?refine.cycle=Update" class="kpi-card">
+                    <div class="kpi-description">
+                        Update
+                    </div>
+                    <div class="kpi-title">
+                        {{ variables['cycles']['Update'].count || 0 | number }}
+                    </div>
+                </a>
+            </div>
+
+            <div class="grid-item hoverable finalise">
+                <a href="/pages/datasets/?refine.cycle=Finalized" class="kpi-card kpi-card-thin">
+                    <div class="kpi-description">
+                        Finalized : {{ variables['cycles']['Finalized'].count || 0 | number }}
+                    </div>
+                </a>
+            </div>
+            <div class="grid-item hoverable unsupervised">
+                <a href="/pages/datasets/?refine.cycle=Unsupervised" class="kpi-card kpi-card-thin">
+                    <div class="kpi-description">
+                        Unsupervised : {{ variables['Unsupervised'] || 0 | number }}
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="information-bloc"
+             ng-init="pop = {'state':false}">
+            <div ng-click="pop.state = true">
+                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                More details about cycles
+            </div>
+            <div class="ods-pop-in"
+                 ng-if="pop.state == true">
+                <div class="ods-pop-in__container information-content">
+                    <div class="title-bloc align-center">
+                        <div class="title-bloc-header">Publication cycles - Supervision app</div>
+                        <a href="#" ng-click="pop.state = false">Close <i class="fa fa-angle-right"
+                                                                          aria-hidden="true"></i></a>
+                    </div>
+                    <div class="information-title">
+                        Collect
+                    </div>
+                    <div class="information-description">
+                        Collecting data consist in identifying their source and producer.
+                        In the platform, it means creating and saving a new dataset, with at least a few metadata like the title and a short description.
+                        For remote source datasets, it can be the source setup (with remote URL), setting up a scheduler
+                        and verifying that the connectivity works properly.
+                    </div>
+                    <div class="information-title">
+                        Edit
+                    </div>
+                    <div class="information-description">
+                        Editing a dataset consist in processing the data according
+                        to best practices defined within the organization.
+                        The scope of this step can be very large, but mainly its goal is to process the data to make it compatible with standards,
+                        aligned with business requirements easier to reuse by enriching the data with additional
+                        information like labels or geographical coordinates.
+                        Technically, it's also appropriate to check if the schema is correct,
+                        fields formats and types are correctly defined regarding the content of each columns.
+                        Finally, it can be interesting to detail each fields with a description to ease the understanding of the data.
+                    </div>
+                    <div class="information-title">
+                        Format
+                    </div>
+                    <div class="information-description">
+                        Format a dataset consist in defining its default views and polish the presenting.
+                        Like selecting, in first, most important fields for the table view, setting the correct title for the map tooltip,
+                        reducing the list of visible fields to help users to go straight to the essential content.
+                        This part is often a cooperative work between stakeholders and business users or representatives
+                        whom can tests the readability and if the data is intelligible.
+                    </div>
+                    <div class="information-title">
+                        Update
+                    </div>
+                    <div class="information-description">
+                        Sometimes complex due to schema modification for example,
+                        a dataset in an update production cycle means that the dataset is stuck waiting for
+                        a data publisher or administrator to operate on it.
+                        Sometimes for security or administrative reasons, or data modifications that force to reevaluate
+                        the needs and purposes of the published data, it's important to distinguish datasets in this state.
+                    </div>
+                    <div class="information-title">
+                        Finalized
+                    </div>
+                    <div class="information-description">
+                        A finalized dataset is validated, and ready to be (or already) published.
+                        All necessary operations has been performed and the dataset is ready.
+                        (Defining metadata, processing the data, formatting the overall dataset, scheduling the source and more...)
+                    </div>
+                    <div class="information-title">
+                        Unsupervised
+                    </div>
+                    <div class="information-description">
+                        Some datasets don't need to be supervised or even updated.
+                        They are unsupervised as they contain static data,
+                        or simply data that are not concerned by any supervision in their organization.
+                        For examples, a geo referential federated from Opendatasoft data-network,
+                        or a data covering a limited period of time like a festival program on a specific date.
+                    </div>
+                    <a href="#" ng-click="pop.state = false">Close <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                </div>
+                <div class="ods-pop-in__backdrop" ng-click="pop.state = false"></div>
+            </div>
+        </div>
+        <!--%- include('_grid-logigramme.ejs'); -%-->
+
+        <div class="title-bloc spacer-large">
+            <div class="title-bloc-header">Forthcoming updates</div>
+            <a href="/pages/supervised">See all forthcoming updates <i class="fa fa-angle-right"
+                                                                       aria-hidden="true"></i></a>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item weekly" ng-if="true">
+                {{
+                title = 'weekly';
+                key = 'Weekly';
+                ''
+                }}
+                <div class="periodicity-card">
+                    <div class="periodicity-title">
+                        {{ title | capitalize }}
+                    </div>
+                    <div class="periodicity-content"
+                         ng-if="variables['periodicite']['late'][key] || variables['periodicite']['forthcoming'][key] || variables['periodicite']['coming'][key]">
+                        <div class="periodicity-flags">
+                            <a href="{{ '/pages/supervised?refine.periodicity=' + key + '&refine.publication_status=Late' }}"
+                               class="periodicity-flag retard hoverable left-side"
+                               ng-if="variables['periodicite']['late'][key].count > 0">{{
+                                variables['periodicite']['late'][key].count | number }} late updates
+                            </a>
+                            <a href="{{ '/pages/supervised?refine.periodicity=' + key + '&refine.publication_status=Forthcoming' }}"
+                               class="periodicity-flag forthcoming hoverable left-side"
+                               ng-if="variables['periodicite']['forthcoming'][key]['days']">Forthcoming update in {{
+                                variables['periodicite']['forthcoming'][key]['days'] | math : 'abs' | number }} day(s)
+                            </a>
+                            <div class="periodicity-flag coming"
+                                 ng-if="variables['periodicite']['coming'][key] && !variables['periodicite']['forthcoming'][key]['days']">Forthcoming update on {{ variables['periodicite']['coming'][key] | moment | date
+                                }}
+                            </div>
+                        </div>
+                        <a href="{{ '/pages/supervised?refine.periodicity=' + key }}" class="periodicity-link-seeall">
+                            See all {{ title }} forthcoming updates <span class="nowrap"> <i class="fa fa-angle-right"
+                                                                                             aria-hidden="true"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="!(variables['periodicite']['late'][key] || variables['periodicite']['forthcoming'][key] || variables['periodicite']['coming'][key])">
+                        No data for this periodicity
+                    </div>
+                </div>
+            </div>
+            <div class="grid-item monthly" ng-if="true">
+                {{
+                title = 'monthly';
+                key = 'Monthly';
+                ''
+                }}
+                <div class="periodicity-card">
+                    <div class="periodicity-title">
+                        {{ title | capitalize }}
+                    </div>
+                    <div class="periodicity-content"
+                         ng-if="variables['periodicite']['late'][key] || variables['periodicite']['forthcoming'][key] || variables['periodicite']['coming'][key]">
+                        <div class="periodicity-flags">
+                            <a href="{{ '/pages/supervised?refine.periodicity=' + key + '&refine.publication_status=Late' }}"
+                               class="periodicity-flag retard hoverable left-side"
+                               ng-if="variables['periodicite']['late'][key].count > 0">{{
+                                variables['periodicite']['late'][key].count | number }} late updates
+                            </a>
+                            <a href="{{ '/pages/supervised?refine.periodicity=' + key + '&refine.publication_status=Forthcoming' }}"
+                               class="periodicity-flag forthcoming hoverable left-side"
+                               ng-if="variables['periodicite']['forthcoming'][key]['days']">Forthcoming update in {{
+                                variables['periodicite']['forthcoming'][key]['days'] | math : 'abs' | number }} day(s)
+                            </a>
+                            <div class="periodicity-flag coming"
+                                 ng-if="variables['periodicite']['coming'][key] && !variables['periodicite']['forthcoming'][key]['days']">Forthcoming update on {{ variables['periodicite']['coming'][key] | moment | date
+                                }}
+                            </div>
+                        </div>
+                        <a href="{{ '/pages/supervised?refine.periodicity=' + key }}" class="periodicity-link-seeall">
+                            See all {{ title }} forthcoming updates <span class="nowrap"> <i class="fa fa-angle-right"
+                                                                                             aria-hidden="true"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="!(variables['periodicite']['late'][key] || variables['periodicite']['forthcoming'][key] || variables['periodicite']['coming'][key])">
+                        No data for this periodicity
+                    </div>
+                </div>
+            </div>
+            <div class="grid-item quarterly" ng-if="true">
+                {{
+                title = 'quarterly';
+                key = 'Quarterly';
+                ''
+                }}
+                <div class="periodicity-card">
+                    <div class="periodicity-title">
+                        {{ title | capitalize }}
+                    </div>
+                    <div class="periodicity-content"
+                         ng-if="variables['periodicite']['late'][key] || variables['periodicite']['forthcoming'][key] || variables['periodicite']['coming'][key]">
+                        <div class="periodicity-flags">
+                            <a href="{{ '/pages/supervised?refine.periodicity=' + key + '&refine.publication_status=Late' }}"
+                               class="periodicity-flag retard hoverable left-side"
+                               ng-if="variables['periodicite']['late'][key].count > 0">{{
+                                variables['periodicite']['late'][key].count | number }} late updates
+                            </a>
+                            <a href="{{ '/pages/supervised?refine.periodicity=' + key + '&refine.publication_status=Forthcoming' }}"
+                               class="periodicity-flag forthcoming hoverable left-side"
+                               ng-if="variables['periodicite']['forthcoming'][key]['days']">Forthcoming update in {{
+                                variables['periodicite']['forthcoming'][key]['days'] | math : 'abs' | number }} day(s)
+                            </a>
+                            <div class="periodicity-flag coming"
+                                 ng-if="variables['periodicite']['coming'][key] && !variables['periodicite']['forthcoming'][key]['days']">Forthcoming update on {{ variables['periodicite']['coming'][key] | moment | date
+                                }}
+                            </div>
+                        </div>
+                        <a href="{{ '/pages/supervised?refine.periodicity=' + key }}" class="periodicity-link-seeall">
+                            See all {{ title }} forthcoming updates <span class="nowrap"> <i class="fa fa-angle-right"
+                                                                                             aria-hidden="true"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="!(variables['periodicite']['late'][key] || variables['periodicite']['forthcoming'][key] || variables['periodicite']['coming'][key])">
+                        No data for this periodicity
+                    </div>
+                </div>
+            </div>
+            <div class="grid-item yearly" ng-if="true">
+                {{
+                title = 'yearly';
+                key = 'Yearly';
+                ''
+                }}
+                <div class="periodicity-card">
+                    <div class="periodicity-title">
+                        {{ title | capitalize }}
+                    </div>
+                    <div class="periodicity-content"
+                         ng-if="variables['periodicite']['late'][key] || variables['periodicite']['forthcoming'][key] || variables['periodicite']['coming'][key]">
+                        <div class="periodicity-flags">
+                            <a href="{{ '/pages/supervised?refine.periodicity=' + key + '&refine.publication_status=Late' }}"
+                               class="periodicity-flag retard hoverable left-side"
+                               ng-if="variables['periodicite']['late'][key].count > 0">{{
+                                variables['periodicite']['late'][key].count | number }} late updates
+                            </a>
+                            <a href="{{ '/pages/supervised?refine.periodicity=' + key + '&refine.publication_status=Forthcoming' }}"
+                               class="periodicity-flag forthcoming hoverable left-side"
+                               ng-if="variables['periodicite']['forthcoming'][key]['days']">Forthcoming update in {{
+                                variables['periodicite']['forthcoming'][key]['days'] | math : 'abs' | number }} day(s)
+                            </a>
+                            <div class="periodicity-flag coming"
+                                 ng-if="variables['periodicite']['coming'][key] && !variables['periodicite']['forthcoming'][key]['days']">Forthcoming update on {{ variables['periodicite']['coming'][key] | moment | date
+                                }}
+                            </div>
+                        </div>
+                        <a href="{{ '/pages/supervised?refine.periodicity=' + key }}" class="periodicity-link-seeall">
+                            See all {{ title }} forthcoming updates <span class="nowrap"> <i class="fa fa-angle-right"
+                                                                                             aria-hidden="true"></i></span>
+                        </a>
+                    </div>
+                    <div ng-if="!(variables['periodicite']['late'][key] || variables['periodicite']['forthcoming'][key] || variables['periodicite']['coming'][key])">
+                        No data for this periodicity
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ods-dataset-context>
+</div>

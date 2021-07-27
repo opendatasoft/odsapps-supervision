@@ -14,11 +14,11 @@
   {
     "name": "expression",
     "args": {
-      "output_field": "Prochaine échéance",
-      "expression": "{{periodicity==\'Annuelle\'? \\tadd_years(modified,1) \\t: \\t(periodicity==\'Trimestrielle\'? \\t\\tadd_months(modified,3) \\t\\t: \\t\\t(periodicity==\'Mensuelle\'? \\t\\t\\tadd_months(modified,1) \\t\\t\\t: \\t\\t\\t(periodicity==\'Hebdomadaire\'? \\t\\t\\t\\tadd_days(modified,7) \\t\\t\\t\\t: \\t\\t\\t\\t\'\')))}}"
+      "output_field": "Deadline",
+      "expression": "{{periodicity==\'Yearly\'? \\tadd_years(modified,1) \\t: \\t(periodicity==\'Quarterly\'? \\t\\tadd_months(modified,3) \\t\\t: \\t\\t(periodicity==\'Monthly\'? \\t\\t\\tadd_months(modified,1) \\t\\t\\t: \\t\\t\\t(periodicity==\'Weekly\'? \\t\\t\\t\\tadd_days(modified,7) \\t\\t\\t\\t: \\t\\t\\t\\t\'\')))}}"
     },
     "$invalid": false,
-    "label": "Prochaine échéance - Périodicité annuelle",
+    "label": "Deadline",
     "id": 0,
     "processor_uid": "pr_stshs4",
     "$$hashKey": "object:181"
@@ -27,7 +27,7 @@
     "name": "expression",
     "args": {
       "output_field": "modifieddayssincenow",
-      "expression": "{{datediff(prochaine_echeance,now(),\'day\')}}"
+      "expression": "{{datediff(deadline,now(),\'day\')}}"
     },
     "$invalid": false,
     "label": "Diff now() / modified",
@@ -38,11 +38,11 @@
   {
     "name": "expression",
     "args": {
-      "output_field": "Statut de publication",
-      "expression": "{{modifieddayssincenow<0?(periodicity==\'Annuelle\' && modifieddayssincenow > -30?\'À venir\':(periodicity==\'Trimestrielle\' && modifieddayssincenow > -14?\'À venir\':(periodicity==\'Mensuelle\' && modifieddayssincenow > -7?\\t\'À venir\':(periodicity==\'Hebdomadaire\' && modifieddayssincenow > -2?\'À venir\':\'\'))))}}"
+      "output_field": "Publication status",
+      "expression": "{{modifieddayssincenow<0?(periodicity==\'Yearly\' && modifieddayssincenow > -30?\'Forthcoming\':(periodicity==\'Quarterly\' && modifieddayssincenow > -14?\'Forthcoming\':(periodicity==\'Monthly\' && modifieddayssincenow > -7?\\t\'Forthcoming\':(periodicity==\'Weekly\' && modifieddayssincenow > -2?\'Forthcoming\':\'\'))))}}"
     },
     "$invalid": false,
-    "label": "À venir",
+    "label": "Forthcoming",
     "id": 0,
     "processor_uid": "pr_mcrhzg",
     "$$hashKey": "object:183"
@@ -50,11 +50,11 @@
   {
     "name": "expression",
     "args": {
-      "output_field": "statut_de_publication",
-      "expression": "{{modifieddayssincenow>=0?\'En retard\':statut_de_publication}}"
+      "output_field": "publication_status",
+      "expression": "{{modifieddayssincenow>=0?\'Late\':publication_status}}"
     },
     "$invalid": false,
-    "label": "Retard",
+    "label": "Late",
     "id": 0,
     "processor_uid": "pr_rnl9ia",
     "$$hashKey": "object:184"
@@ -62,11 +62,11 @@
   {
     "name": "expression",
     "args": {
-      "output_field": "Planifié",
+      "output_field": "Planned",
       "expression": "{{contains(publishing_properties,\\"scheduled\\")}}"
     },
     "$invalid": false,
-    "label": "Planifié oui/non",
+    "label": "Planned yes/no",
     "id": 0,
     "processor_uid": "pr_zfqtkw",
     "$$hashKey": "object:185"
@@ -95,7 +95,7 @@
     "args": {
       "from_name": "custom_cycle",
       "to_name": "cycle",
-      "label": "Cycle de publication"
+      "label": "Publication cycle"
     },
     "name": "rename",
     "processor_uid": "pr_wy0u1c",
@@ -106,7 +106,7 @@
     "args": {
       "from_name": "custom_periodicity",
       "to_name": "periodicity",
-      "label": "Périodicité de mise à jour"
+      "label": "Update periodicity"
     },
     "name": "rename",
     "processor_uid": "pr_e02fau",
@@ -126,7 +126,7 @@
   },
   {
     "args": {
-      "field": "prochaine_echeance",
+      "field": "deadline",
       "type": "date"
     },
     "name": "type",
@@ -136,7 +136,7 @@
   },
   {
     "args": {
-      "field": "prochaine_echeance",
+      "field": "deadline",
       "args": [
         "-count"
       ],
@@ -149,7 +149,7 @@
   },
   {
     "args": {
-      "field": "prochaine_echeance",
+      "field": "deadline",
       "args": [
         "day"
       ],
@@ -185,8 +185,8 @@
   },
   {
     "args": {
-      "from_name": "retard",
-      "to_name": "retard",
+      "from_name": "Late",
+      "to_name": "Late",
       "label": ""
     },
     "name": "rename",
@@ -196,9 +196,9 @@
   },
   {
     "args": {
-      "from_name": "prochaine_echeance",
-      "to_name": "prochaine_echeance",
-      "label": "Prochaine échéance"
+      "from_name": "deadline",
+      "to_name": "deadline",
+      "label": "Deadline"
     },
     "name": "rename",
     "processor_uid": "pr_wt7l7k",
@@ -207,7 +207,7 @@
   },
   {
     "args": {
-      "field": "retard",
+      "field": "late",
       "annotation": "facet"
     },
     "name": "annotate",
@@ -217,9 +217,9 @@
   },
   {
     "args": {
-      "from_name": "categorie_prochaine_echeance",
-      "to_name": "categorie_prochaine_echeance",
-      "label": "Categorie prochaine échéance"
+      "from_name": "categorie_deadline",
+      "to_name": "categorie_deadline",
+      "label": "Categorie Deadline"
     },
     "name": "rename",
     "processor_uid": "pr_309enn",
@@ -228,7 +228,7 @@
   },
   {
     "args": {
-      "field": "categorie_prochaine_echeance",
+      "field": "categorie_deadline",
       "annotation": "facet"
     },
     "name": "annotate",
@@ -238,9 +238,9 @@
   },
   {
     "args": {
-      "from_name": "en_retard",
-      "to_name": "en_retard",
-      "label": "En retard"
+      "from_name": "late",
+      "to_name": "late",
+      "label": "Late"
     },
     "name": "rename",
     "processor_uid": "pr_hxzmnd",
@@ -249,9 +249,9 @@
   },
   {
     "args": {
-      "from_name": "a_venir",
-      "to_name": "a_venir",
-      "label": "À venir"
+      "from_name": "forthcoming",
+      "to_name": "forthcoming",
+      "label": "Forthcoming"
     },
     "name": "rename",
     "processor_uid": "pr_y2a5rf",
@@ -260,7 +260,7 @@
   },
   {
     "args": {
-      "field": "en_retard",
+      "field": "late",
       "annotation": "facet"
     },
     "name": "annotate",
@@ -270,7 +270,7 @@
   },
   {
     "args": {
-      "field": "a_venir",
+      "field": "forthcoming",
       "annotation": "facet"
     },
     "name": "annotate",
@@ -280,9 +280,9 @@
   },
   {
     "args": {
-      "from_name": "statut_de_publication",
-      "to_name": "statut_de_publication",
-      "label": "Statut de publication"
+      "from_name": "publication_status",
+      "to_name": "publication_status",
+      "label": "Publication status"
     },
     "name": "rename",
     "processor_uid": "pr_2dlkv3",
@@ -291,7 +291,7 @@
   },
   {
     "args": {
-      "field": "statut_de_publication",
+      "field": "publication_status",
       "annotation": "facet"
     },
     "name": "annotate",
@@ -301,9 +301,9 @@
   },
   {
     "args": {
-      "from_name": "planifie",
-      "to_name": "planifie",
-      "label": "Planifié"
+      "from_name": "planned",
+      "to_name": "planned",
+      "label": "Planned"
     },
     "name": "rename",
     "processor_uid": "pr_ssj6yx",
@@ -312,7 +312,7 @@
   },
   {
     "args": {
-      "field": "planifie",
+      "field": "planned",
       "annotation": "facet"
     },
     "name": "annotate",

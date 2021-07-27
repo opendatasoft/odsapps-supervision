@@ -1,0 +1,17 @@
+{
+  "connection": null,
+  "deleted": false,
+  "enabled": true,
+  "id": "domaindatasets",
+  "params": {
+    "admin_metadata": true,
+    "custom_metadata": true,
+    "dataset_stats": true,
+    "interop_metadata": true,
+    "private_datasets": true,
+    "staged_datasets": true
+  },
+  "title": "domaindatasets://",
+  "type": "domain_datasets",
+  "url": "domaindatasets://"
+}

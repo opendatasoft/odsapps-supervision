@@ -1,0 +1,300 @@
+<div class="container">
+
+    <ods-dataset-context context="all"
+                         all-dataset="domaindatasets"
+                         all-urlsync="true"
+
+                         ng-init="variables = {
+                'selected': {
+                        'theme': all.parameters['refine.theme'] || 'All',
+                        'cycle': all.parameters['refine.cycle'] || 'All'
+                        },
+                'focusedDropdown': '',
+                'order': [0, 'All','Collect', 'Edit', 'Format', 'Update', 'Finalized','Unsupervised']
+                }">
+
+        {{
+        all.parameters['disjunctive.theme'] = true;
+        all.parameters['disjunctive.cycle'] = true;
+        all.parameters['sort'] = 'modified';
+        ''
+        }}
+
+        <span ods-aggregation="countall"
+              ods-aggregation-context="all"
+              ods-aggregation-function="count">
+        {{ variables['all']['count'] = countall ; '' }}
+    </span>
+
+        <div class="header">
+            <a href="/pages/action" class="back-button" ods-tooltip="Back to the supervision">
+            </a>
+            <div class="title">
+                {{ variables['all']['count'] | number }} datasets
+            </div>
+        </div>
+
+        <div class="app-box">
+
+            <div class="search-module">
+                <i class="fa fa-search search-module-icon" aria-hidden="true"></i>
+                <input placeholder="Search a dataset"
+                       ng-model="all.parameters['q']"
+                       ng-model-options="{ updateOn: 'keyup', debounce: { 'default': 300, 'blur': 0 }}"
+                       class="search-module-input"
+                       type="text"/>
+                <button title="Clear"
+                        class="search-module-clear"
+                        ng-if="all.parameters['q']"
+                        ng-click="all.parameters['q'] = undefined">
+                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="app-row">
+                <!--
+                    Pill filter : Cycle
+                -->
+                <div class="dropdown"
+                     ods-facet-results="facetscycle"
+                     ods-facet-results-context="all"
+                     ods-facet-results-facet-name="cycle"
+                     ods-facet-results-sort="alphanum">
+                    {{ cycles = (facetscycle | toObject : 'path'); '' }}
+
+                    <button ng-click="variables.focusedDropdown = (variables.focusedDropdown == 'cycle' ? '' : 'cycle');"
+                            class="dropdown-button"
+                            ng-class="{'dropdown-button-active': variables.selected.cycle != 'All',
+                                   'dropdown-button-open': variables.focusedDropdown == 'cycle'}"
+                            id="cycle-dropdown-button"
+                            aria-haspopup="true"
+                            aria-expanded="variables.focusedDropdown == 'cycle'">
+                        {{ (variables.selected.cycle == 'All' ? 'Publication cycle': variables.selected.cycle) | capitalize }}
+                    </button>
+                    <div class="dropdown-menu"
+                         ng-class="{'dropdown-visible' : variables.focusedDropdown == 'cycle' }"
+                         aria-labelledby="cycle-dropdown-button">
+                        <div class="dropdown-title">
+                            Publication cycle
+                        </div>
+                        <ul class="dropdown-items">
+                            <li class="dropdown-item"
+                                style="{{ 'order: ' + variables.order.indexOf('All') }}">
+                                <input class="dropdown-input"
+                                       type="radio"
+                                       name="cycle"
+                                       ng-model="variables.selected.cycle"
+                                       value="All"
+                                       id="cycle-all"/>
+                                <label class="dropdown-label"
+                                       for="cycle-all">
+                                    All
+                                </label>
+                            </li>
+                            <li class="dropdown-item"
+                                ng-repeat="facet in facetscycle"
+                                style="{{ 'order: ' + variables.order.indexOf(facet.path) }}">
+                                <input class="dropdown-input"
+                                       type="radio"
+                                       name="cycle"
+                                       ng-model="variables.selected.cycle"
+                                       ng-value="facet.path"
+                                       id="{{ facet.path }}"/>
+                                <label class="dropdown-label" for="{{ facet.path }}">
+                                    {{ facet.name | capitalize }}
+                                </label>
+                            </li>
+                            <div class="dropdown-item"
+                                 style="{{ 'order: ' + variables.order.indexOf('Unsupervised') }}">
+                                <input class="dropdown-input"
+                                       type="radio"
+                                       name="cycle"
+                                       ng-model="variables.selected.cycle"
+                                       value="Unsupervised"
+                                       id="unsupervised"/>
+                                <label class="dropdown-label"
+                                       for="unsupervised">
+                                    Unsupervised
+                                </label>
+                            </div>
+                        </ul>
+                        {{ all.parameters['refine.cycle'] = (variables.selected.cycle == 'All' ||
+                        variables.selected.cycle == 'Unsupervised' ? undefined: variables.selected.cycle);
+                        all.parameters['q.exclude'] = (variables.selected.cycle == 'Unsupervised' ? '#null(cycle)': undefined);'' }}
+                    </div>
+                </div>
+
+                <!--
+                    Pill filter : Theme
+                -->
+                <div class="dropdown"
+                     ods-facet-results="facetstheme"
+                     ods-facet-results-context="all"
+                     ods-facet-results-facet-name="theme"
+                     ods-facet-results-sort="alphanum">
+                    <button ng-click="variables.focusedDropdown = (variables.focusedDropdown == 'theme' ? '' : 'theme');"
+                            ng-class="{'dropdown-button-active': variables.selected.theme != 'All',
+                                  'dropdown-button-open': variables.focusedDropdown == 'theme'}"
+                            id="theme-dropdown-button"
+                            class="dropdown-button"
+                            aria-haspopup="true"
+                            aria-expanded="{{ variables.focusedDropdown == 'theme' }}">
+                        {{ (variables.selected.theme == 'All' ? 'Theme': variables.selected.theme) | capitalize }}
+                    </button>
+                    <div class="dropdown-menu"
+                         ng-class="{'dropdown-visible' : variables.focusedDropdown == 'theme' }"
+                         aria-labelledby="theme-dropdown-button">
+                        <div class="dropdown-title">
+                            Theme
+                        </div>
+                        <ul class="dropdown-items">
+                            <li class="dropdown-item">
+                                <input class="dropdown-input"
+                                       type="radio"
+                                       name="theme"
+                                       ng-model="variables.selected.theme"
+                                       value="All"
+                                       id="theme-all"/>
+                                <label class="dropdown-label"
+                                       for="theme-all">
+                                    All
+                                </label>
+                            </li>
+                            <li class="dropdown-item"
+                                ng-repeat="facet in facetstheme">
+                                <input class="dropdown-input"
+                                       type="radio"
+                                       name="theme"
+                                       ng-model="variables.selected.theme"
+                                       ng-value="facet.path" id="{{ facet.path }}"/>
+                                <label class="dropdown-label"
+                                       for="{{ facet.path }}">
+                                    {{ facet.name | capitalize }}
+                                </label>
+                            </li>
+                        </ul>
+                        {{ all.parameters['refine.theme'] = (variables.selected.theme == 'All' ? undefined : variables.selected.theme); '' }}
+                    </div>
+                </div>
+            </div>
+
+            <table ods-get-window-layout="tablelo"
+                   ods-results="datasets"
+                   ods-results-context="all"
+                   ods-results-max="100"
+                   class="table-advanced">
+                <thead>
+                <tr class="gridlayout">
+                    <th class="borderless col-nb-1" scope="col">Datasets</th>
+                    <th class="borderless col-nb-2" scope="col">Publication cycle</th>
+                    <th class="borderless col-nb-3" scope="col" ng-if="tablelo.width > 850">Contact</th>
+                    <th class="borderless col-nb-4" scope="col" ng-if="tablelo.width > 800">Last modification date</th>
+                    <th class="borderless col-nb-5" scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="gridlayout"
+                    ng-repeat-start="(i,dataset) in datasets"
+                    style="{{ 'order: ' + (10000 * variables.order.indexOf(dataset.fields.cycle || 'Unsupervised') + i) }}">
+                    <td class="col-nb-1 inlined-content"
+                        ng-click="variables.details = (variables.details == dataset.fields.dataset_id?'':dataset.fields.dataset_id)"
+                        ng-class="{'details-active': variables.details == dataset.fields.dataset_id}">
+                        <ods-theme-picto theme="{{ dataset.fields.theme }}"></ods-theme-picto>
+                        <div class="truncate">
+                            {{dataset.fields.title}}
+                        </div>
+                        <div class="details-text">
+                            - Details
+                        </div>
+                    </td>
+                    <td class="col-nb-2 periodicity-flag-container">
+                        <div class="periodicity-flag left-side dark-text"
+                             ng-if="dataset.fields.cycle"
+                             ng-class="{'coming': ['Edit','Collect','Update','Format'].indexOf(dataset.fields.cycle) >= 0}">
+                            {{ dataset.fields.cycle }}
+                        </div>
+                        <div class="periodicity-flag left-side"
+                             ng-if="!dataset.fields.cycle">
+                            Unsupervised
+                        </div>
+                    </td>
+                    <td class="col-nb-3" ng-if="tablelo.width > 850">
+                        <span>{{ dataset.fields.admin_contact_point_name }}</span>
+                    </td>
+                    <td class="col-nb-4" ng-if="tablelo.width > 800">
+                        {{ dataset.fields.modified | date : 'dd/MM/yyyy' }}
+                    </td>
+                    <td class="col-nb-5">
+                        <div class="table-dropdown-container">
+                            <button class="table-dropdown-button"
+                                    ng-click="variables.focusedDropdown = (variables.focusedDropdown == dataset.fields.dataset_id ? '' : dataset.fields.dataset_id)"
+                                    ng-class="{'table-dropdown-button-active': variables.focusedDropdown == dataset.fields.dataset_id}">
+                                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                            </button>
+                            <div class="table-dropdown"
+                                 ng-class="{'table-dropdown-visible' : variables.focusedDropdown == dataset.fields.dataset_id }">
+                                <a target="_blank"
+                                   href="{{ '/explore/dataset/' + dataset.fields.dataset_id + '/?' }}"
+                                   class="table-dropdown-item">
+                                    Explore
+                                </a>
+                                <a target="_blank"
+                                   href="{{ '/backoffice/catalog/datasets/' + dataset.fields.dataset_id + '/#processing' }}"
+                                   class="table-dropdown-item">
+                                    Edit
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr class="details"
+                    ng-repeat-end
+                    ng-show="variables.details == dataset.fields.dataset_id"
+                    style="{{ 'order: ' + (10000 * variables.order.indexOf(dataset.fields.cycle || 'Unsupervised') + i) }}">
+                    <td class="details-col-nb-1" colspan="0">
+                        <ul class="metas">
+                            <li class="meta">
+                                <span class="metaname">Identifier:</span><span
+                                    class="metavalue">{{ dataset.fields.dataset_id }}</span>
+                            </li>
+                            <li class="meta">
+                                <span class="metaname">Theme:</span><span
+                                    class="metavalue">{{ dataset.fields.theme }}</span>
+                            </li>
+                            <li class="meta">
+                                <span class="metaname">License:</span><span
+                                    class="metavalue">{{ dataset.fields.license }}</span>
+                            </li>
+                            <li class="meta" ng-if="tablelo.width <= 850">
+                                <span class="metaname">Last modification date:</span><span
+                                    class="metavalue">{{ dataset.fields.modified | date }}</span>
+                            </li>
+                            <li class="meta" ng-if="tablelo.width <= 800">
+                                <span class="metaname">Contact:</span><span
+                                    class="metavalue">{{ dataset.fields.admin_contact_point_name }}</span>
+                            </li>
+                            <li class="meta">
+                                <span class="metaname">Periodicity:</span><span
+                                    class="metavalue">{{ dataset.fields.periodicity }}</span>
+                            </li>
+                            <li class="meta contact">
+                                <span class="metaname">Email:</span><span
+                                    class="metavalue">{{ dataset.fields.admin_contact_point_email }} ({{ dataset.fields.admin_contact_point_name }})</span>
+                                <ods-clipboard-input
+                                        value="dataset.fields.admin_contact_point_email"></ods-clipboard-input>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+
+            <div class="dropdown-backdrop"
+                 ng-click="variables.focusedDropdown = ''"
+                 ng-if="variables.focusedDropdown"></div>
+
+        </div>
+    </ods-dataset-context>
+</div>
