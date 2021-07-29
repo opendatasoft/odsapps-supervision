@@ -24,7 +24,7 @@
             <a href="/pages/action" class="back-button" ods-tooltip="Back to the supervision">
             </a>
             <div class="title">
-                Forthcoming dataset updates
+                Upcoming Dataset Updates
             </div>
         </div>
 
@@ -151,18 +151,18 @@
                                 </label>
                             </div>
                             <div class="dropdown-item"
-                                 ng-if="status['Forthcoming']">
+                                 ng-if="status['Upcoming']">
                                 <input class="dropdown-input"
                                        type="radio"
                                        name="status"
                                        ng-model="variables.selected.publication_status"
-                                       value="Forthcoming"
-                                       id="forthcoming"/>
+                                       value="Upcoming"
+                                       id="upcoming"/>
                                 <label class="dropdown-label"
-                                       for="forthcoming">
-                                    <div class="periodicity-flag forthcoming">
+                                       for="upcoming">
+                                    <div class="periodicity-flag upcoming">
                                         <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                                        Forthcoming
+                                        Upcoming
                                     </div>
                                 </label>
                             </div>
@@ -213,8 +213,8 @@
                             {{ dataset.fields.modifieddayssincenow }} day(s) late
                         </div>
 
-                        <div class="periodicity-flag right-side forthcoming"
-                             ng-if=" dataset.fields.publication_status == 'Forthcoming'">
+                        <div class="periodicity-flag right-side upcoming"
+                             ng-if=" dataset.fields.publication_status == 'Upcoming'">
                             {{ dataset.fields.modifieddayssincenow|math:'abs' }} day(s) to go
                         </div>
 

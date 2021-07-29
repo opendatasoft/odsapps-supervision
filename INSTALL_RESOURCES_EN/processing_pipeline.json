@@ -39,10 +39,10 @@
     "name": "expression",
     "args": {
       "output_field": "Publication status",
-      "expression": "{{modifieddayssincenow<0?(periodicity==\'Yearly\' && modifieddayssincenow > -30?\'Forthcoming\':(periodicity==\'Quarterly\' && modifieddayssincenow > -14?\'Forthcoming\':(periodicity==\'Monthly\' && modifieddayssincenow > -7?\\t\'Forthcoming\':(periodicity==\'Weekly\' && modifieddayssincenow > -2?\'Forthcoming\':\'\'))))}}"
+      "expression": "{{modifieddayssincenow<0?(periodicity==\'Yearly\' && modifieddayssincenow > -30?\'Upcoming\':(periodicity==\'Quarterly\' && modifieddayssincenow > -14?\'Upcoming\':(periodicity==\'Monthly\' && modifieddayssincenow > -7?\\t\'Upcoming\':(periodicity==\'Weekly\' && modifieddayssincenow > -2?\'Upcoming\':\'\'))))}}"
     },
     "$invalid": false,
-    "label": "Forthcoming",
+    "label": "Upcoming",
     "id": 0,
     "processor_uid": "pr_mcrhzg",
     "$$hashKey": "object:183"
@@ -249,9 +249,9 @@
   },
   {
     "args": {
-      "from_name": "forthcoming",
-      "to_name": "forthcoming",
-      "label": "Forthcoming"
+      "from_name": "upcoming",
+      "to_name": "upcoming",
+      "label": "Upcoming"
     },
     "name": "rename",
     "processor_uid": "pr_y2a5rf",
@@ -270,7 +270,7 @@
   },
   {
     "args": {
-      "field": "forthcoming",
+      "field": "upcoming",
       "annotation": "facet"
     },
     "name": "annotate",

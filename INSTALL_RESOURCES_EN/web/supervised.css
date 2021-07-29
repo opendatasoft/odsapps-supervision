@@ -15,8 +15,8 @@
   --card-hover-txt: var(--hover-color);
   --pill-border: rgb(203, 210, 219);
   --search: var(--dark-blue);
-  --forthcoming: #efb71b;
-  --forthcoming-background: rgba(239,183,27,0.1);
+  --upcoming: #efb71b;
+  --upcoming-background: rgba(239,183,27,0.1);
   --late: #ce0037;
   --late-background: rgba(206,0,55,0.1);
   --coming: var(--medium-grey);
@@ -117,7 +117,7 @@ i.fa.fa-angle-right {
   font-size: 26px;
   margin-left: 16px; }
 
-/* Flags retard / Forthcoming / coming */
+/* Flags retard / Upcoming / coming */
 .periodicity-flag {
   padding: 4px 6px;
   border-radius: 4px;
@@ -137,20 +137,20 @@ i.fa.fa-angle-right {
     .periodicity-flag.retard.hoverable:hover {
       background-color: var(--late);
       color: white; }
-  .periodicity-flag.forthcoming {
-    background-color: var(--forthcoming-background);
-    color: var(--forthcoming);
-    text-decoration: none solid var(--forthcoming); }
-    .periodicity-flag.forthcoming.left-side:before {
+  .periodicity-flag.upcoming {
+    background-color: var(--upcoming-background);
+    color: var(--upcoming);
+    text-decoration: none solid var(--upcoming); }
+    .periodicity-flag.upcoming.left-side:before {
       content: "\f071";
       font-family: 'FontAwesome';
       margin-right: 4px; }
-    .periodicity-flag.forthcoming.right-side:after {
+    .periodicity-flag.upcoming.right-side:after {
       content: "\f071";
       font-family: 'FontAwesome';
       margin-left: 4px; }
-    .periodicity-flag.forthcoming.hoverable:hover {
-      background-color: var(--forthcoming);
+    .periodicity-flag.upcoming.hoverable:hover {
+      background-color: var(--upcoming);
       color: white; }
   .periodicity-flag.coming {
     background-color: var(--coming-background);
