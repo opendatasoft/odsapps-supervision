@@ -11,14 +11,14 @@
                          unsupervised-dataset="domaindatasets"
                          unsupervised-parameters="{'q':'#null(cycle)'}">
 
-        <!-- Part 0 : All -->
+        <!-- Part 0: All -->
         <span ods-aggregation="countall"
               ods-aggregation-context="all"
               ods-aggregation-function="count">
         {{ variables['all']['count'] = countall ; '' }}
     </span>
 
-        <!-- Part 1 : Cycles -->
+        <!-- Part 1: Cycles -->
         <span ods-analysis="analysecycles"
               ods-analysis-context="all"
               ods-analysis-x="cycle"
@@ -32,7 +32,7 @@
         {{ variables['Unsupervised'] = countunsupervised ; '' }}
     </span>
 
-        <!-- Part 2 : Periodicity -->
+        <!-- Part 2: Periodicity -->
         <span ods-analysis="analyselate"
               ods-analysis-context="late"
               ods-analysis-x="periodicity"
@@ -114,14 +114,14 @@
             <div class="grid-item hoverable finalise">
                 <a href="/pages/datasets/?refine.cycle=Finalized" class="kpi-card kpi-card-thin">
                     <div class="kpi-description">
-                        Finalized : {{ variables['cycles']['Finalized'].count || 0 | number }}
+                        Finalized: {{ variables['cycles']['Finalized'].count || 0 | number }}
                     </div>
                 </a>
             </div>
             <div class="grid-item hoverable unsupervised">
                 <a href="/pages/datasets/?refine.cycle=Unsupervised" class="kpi-card kpi-card-thin">
                     <div class="kpi-description">
-                        Unsupervised : {{ variables['Unsupervised'] || 0 | number }}
+                        Unsupervised: {{ variables['Unsupervised'] || 0 | number }}
                     </div>
                 </a>
             </div>
